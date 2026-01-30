@@ -1,7 +1,8 @@
 import io
-import base64
 from datetime import datetime, timezone
 import numpy as np
+
+from typing import List
 
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
@@ -9,29 +10,49 @@ import cartopy.crs as ccrs
 from cartopy.feature.nightshade import Nightshade
 import cartopy.feature as cfeature
 
-from fastapi import FastAPI
-from fastapi.responses import Response, JSONResponse
+from matplotlib.offsetbox import OffsetImage, AnnotationBbox
+import matplotlib.image as mpimg
+from matplotlib.transforms import Affine2D
 
-from model.pos import SatellitePlot
+from model.plot_type import PlotType
+from model.size_type import PlotSize
+from model.image_format import ImageFormat
+from model.color_scheme import Colorscheme
 from model.location import Location
-from model.size_type import plot_size
-from typing import List
-
-from helper import plot_custom_svg
-
-app = FastAPI()
 
 
-def encode_base64(data: bytes) -> str:
-    return base64.b64encode(data).decode("utf-8")
+def plot_custom_svg(
+        norad: int,
+        type: PlotType,
+        size: PlotSize,
+        format: ImageFormat,
+        colorscheme: Colorscheme,
+        locs: List[Location],
+        now: Location) -> bytes:
 
-
-def plot_svg(locs: List[Location]) -> bytes:
-    fig = plt.figure(figsize=(16, 8))
+    fig = plt.figure(figsize=size.figsize, dpi=size.dpi)
+    # fig = plt.figure(figsize=(16, 8), dpi=300)
     plt.axis("off")
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
 
-    ax = plt.axes(projection=ccrs.PlateCarree())
+    if type == type.PlateCarree:
+        projection = ccrs.PlateCarree()
+    else:
+        if now:
+            cen_lat = now.latitude
+            cen_lon = now.longitude
+            h = now.altitude * 1000_000
+        else:
+            cen_lat = 0.0
+            cen_lon = 0.0
+            h = 35785831
+
+        projection = ccrs.NearsidePerspective(
+            central_latitude=cen_lat,
+            central_longitude=cen_lon,
+            satellite_height=h)
+
+    ax = plt.axes(projection=projection)
     # ax.coastlines()
     ax.add_feature(
         cfeature.LAND,
@@ -60,6 +81,14 @@ def plot_svg(locs: List[Location]) -> bytes:
     date = datetime.now(timezone.utc)
     ax.add_feature(Nightshade(date, alpha=0.25))
 
+    if type == type.NearsidePerspective:
+        gl = ax.gridlines(crs=ccrs.PlateCarree(), linewidth=1,
+                          color='black', alpha=0.5)
+
+        # Manipulate latitude and longitude gridline numbers and spacing
+        gl.ylocator = mticker.FixedLocator(np.arange(-90, 90, 20))
+        gl.xlocator = mticker.FixedLocator(np.arange(-180, 180, 20))
+
     if locs:
         # lons = [loc.longitude for loc in locations]
         # lats = [loc.latitude for loc in locations]
@@ -71,12 +100,34 @@ def plot_svg(locs: List[Location]) -> bytes:
                  marker='x',
                  transform=ccrs.Geodetic())
 
+    if now:
+        # Load ISS image
+        if norad == 25544:
+            iss_img = mpimg.imread("iss.png")  # transparent background
+        else:
+            iss_img = mpimg.imread("sat.png")  # transparent background
+
+        imagebox = OffsetImage(iss_img, zoom=0.04)
+
+        imagebox.image.axes = ax
+        imagebox.image.set_transform(Affine2D() + ax.transData)
+
+        ab = AnnotationBbox(
+            imagebox,
+            (now.longitude, now.latitude),
+            xycoords=ccrs.PlateCarree()._as_mpl_transform(ax),
+            frameon=False,
+        )
+
+        ax.add_artist(ab)
+
     ax.set_global()
-    ax.set_extent([-180, 180, -90, 90])
+    if type == type.PlateCarree:
+        ax.set_extent([-180, 180, -90, 90])
     ax.margins(0)
 
     buffer = io.BytesIO()
-    plt.savefig(buffer, format="svg", bbox_inches="tight", pad_inches=0)
+    plt.savefig(buffer, format=format, bbox_inches="tight", pad_inches=0)
     plt.close(fig)
 
     buffer.seek(0)
@@ -147,56 +198,3 @@ def plot_svg_nearside() -> bytes:
 
     buffer.seek(0)
     return buffer.getvalue()
-
-
-@app.get("/plot")
-async def get_plot():
-    return JSONResponse({
-        "image_type": "svg",
-        "encoding": "base64",
-        "data": encode_base64(plot_svg()),
-    })
-
-
-@app.get("/plot/svg")
-async def get_plot_svg():
-    return Response(
-        media_type="image/svg+xml",
-        content=plot_svg()
-    )
-
-
-@app.get("/plot/nearside")
-async def get_plot_nearside():
-    return JSONResponse({
-        "image_type": "svg",
-        "encoding": "base64",
-        "data": encode_base64(plot_svg_nearside()),
-    })
-
-
-@app.get("/plot/svg/nearside")
-async def get_plot_svg_nearside():
-    return Response(
-        media_type="image/svg+xml",
-        content=plot_svg_nearside()
-    )
-
-
-@app.post("/custom/plot")
-async def get_plot_req(req: SatellitePlot):
-    # result = {**req.dict()}
-    # return result
-    # return req.model_dump()
-
-    return Response(
-        media_type="image/svg+xml",
-        content=plot_custom_svg(
-            req.norad,
-            req.plot_types[0],
-            plot_size(req.size_type),
-            req.image_format,
-            req.color_scheme,
-            req.locations,
-            req.now_location)
-    )
