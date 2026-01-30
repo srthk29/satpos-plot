@@ -54,27 +54,26 @@ def plot_custom_svg(
 
     ax = plt.axes(projection=projection)
     # ax.coastlines()
+
+    # Features with a higher zorder value are drawn on
+    # top of features with a lower zorder value.
+
     ax.add_feature(
         cfeature.LAND,
         edgecolor='lime',
-        facecolor='forestgreen',
-        zorder=0)
+        facecolor='forestgreen')
 
     ax.add_feature(
         cfeature.LAKES,
-        edgecolor='black',
-        linewidth=0.2,
         facecolor='blue')
+
+    ax.add_feature(
+        cfeature.COASTLINE,
+        edgecolor='lime')
 
     ax.add_feature(
         cfeature.OCEAN,
         facecolor='darkblue')
-
-    ax.add_feature(
-        cfeature.COASTLINE,
-        edgecolor='lime',
-        # facecolor='forestgreen',
-        zorder=0)
 
     # https://cartopy.readthedocs.io/v0.25.0.post2/gallery/lines_and_polygons/nightshade.html#sphx-glr-gallery-lines-and-polygons-nightshade-py
     # UTC Time
@@ -95,9 +94,10 @@ def plot_custom_svg(
         lons, lats = zip(*[(loc.longitude, loc.latitude) for loc in locs])
 
         plt.plot(lons, lats,
-                 color='darkgreen',
-                 linewidth=1.5,
-                 marker='x',
+                 color='dimgray',
+                 linewidth=2,
+                 linestyle='dashed',
+                 # marker='_',
                  transform=ccrs.Geodetic())
 
     if now:
