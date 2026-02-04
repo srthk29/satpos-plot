@@ -6,6 +6,7 @@ from model.size_type import SizeType
 from model.image_format import ImageFormat
 from model.color_scheme import Colorscheme
 from model.location import Location
+from model.feature import Feature
 
 
 class SatellitePlot(BaseModel):
@@ -16,6 +17,9 @@ class SatellitePlot(BaseModel):
     color_scheme: Colorscheme
     locations: List[Location]
     now_location: Location
+    icon: bool
+    nightshade: bool
+    features: List[Feature]
 
 
 '''
@@ -29,7 +33,9 @@ class SatellitePlot(BaseModel):
       "latitude": 12.97,
       "longitude": 77.59,
       "altitude": 400
-    }
+    },
+    "icon": true,
+    "nightshade": true
   ]
 }
 '''

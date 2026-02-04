@@ -198,5 +198,8 @@ async def get_plot_req(req: SatellitePlot):
             req.image_format,
             req.color_scheme,
             req.locations,
-            req.now_location)
+            req.now_location,
+            req.icon,
+            req.nightshade
+        )
     )

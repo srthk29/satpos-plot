@@ -28,7 +28,9 @@ def plot_custom_svg(
         format: ImageFormat,
         colorscheme: Colorscheme,
         locs: List[Location],
-        now: Location) -> bytes:
+        now: Location,
+        icon: bool,
+        nightshade: bool) -> bytes:
 
     fig = plt.figure(figsize=size.figsize, dpi=size.dpi)
     # fig = plt.figure(figsize=(16, 8), dpi=300)
@@ -77,8 +79,9 @@ def plot_custom_svg(
 
     # https://cartopy.readthedocs.io/v0.25.0.post2/gallery/lines_and_polygons/nightshade.html#sphx-glr-gallery-lines-and-polygons-nightshade-py
     # UTC Time
-    date = datetime.now(timezone.utc)
-    ax.add_feature(Nightshade(date, alpha=0.25))
+    if nightshade:
+        date = datetime.now(timezone.utc)
+        ax.add_feature(Nightshade(date, alpha=0.25))
 
     if type == type.NearsidePerspective:
         gl = ax.gridlines(crs=ccrs.PlateCarree(), linewidth=1,
@@ -101,25 +104,34 @@ def plot_custom_svg(
                  transform=ccrs.Geodetic())
 
     if now:
-        # Load ISS image
-        if norad == 25544:
-            iss_img = mpimg.imread("iss.png")  # transparent background
+        if icon:
+            # Load ISS image
+            if norad == 25544:
+                iss_img = mpimg.imread("iss.png")  # transparent background
+            else:
+                iss_img = mpimg.imread("sat.png")  # transparent background
+
+            imagebox = OffsetImage(iss_img, zoom=0.04)
+
+            imagebox.image.axes = ax
+            imagebox.image.set_transform(Affine2D() + ax.transData)
+
+            ab = AnnotationBbox(
+                imagebox,
+                (now.longitude, now.latitude),
+                xycoords=ccrs.PlateCarree()._as_mpl_transform(ax),
+                frameon=False,
+            )
+
+            ax.add_artist(ab)
         else:
-            iss_img = mpimg.imread("sat.png")  # transparent background
-
-        imagebox = OffsetImage(iss_img, zoom=0.04)
-
-        imagebox.image.axes = ax
-        imagebox.image.set_transform(Affine2D() + ax.transData)
-
-        ab = AnnotationBbox(
-            imagebox,
-            (now.longitude, now.latitude),
-            xycoords=ccrs.PlateCarree()._as_mpl_transform(ax),
-            frameon=False,
-        )
-
-        ax.add_artist(ab)
+            plt.plot(now.longitude, now.latitude,
+                     marker='D',
+                     markersize=12,
+                     markerfacecolor='red',
+                     markeredgecolor='black',
+                     linestyle='None',
+                     transform=ccrs.Geodetic())
 
     ax.set_global()
     if type == type.PlateCarree:
