@@ -18,6 +18,9 @@ from model.plot_type import PlotType
 from model.size_type import PlotSize
 from model.image_format import ImageFormat
 from model.color_scheme import Colorscheme
+from model.color_scheme import get_theme_colors
+from model.color_scheme import get_accent_colors
+
 from model.location import Location
 
 
@@ -60,22 +63,20 @@ def plot_custom_svg(
     # Features with a higher zorder value are drawn on
     # top of features with a lower zorder value.
 
-    ax.add_feature(
-        cfeature.LAND,
-        edgecolor='lime',
-        facecolor='forestgreen')
+    txt, _ = get_accent_colors(colorscheme.accent)
+    _, bg = get_theme_colors(colorscheme.theme)
 
-    ax.add_feature(
-        cfeature.LAKES,
-        facecolor='blue')
+    # ax.add_feature(cfeature.LAND, edgecolor='lime', facecolor='forestgreen')
+    ax.add_feature(cfeature.LAND, edgecolor=txt, facecolor=bg)
 
-    ax.add_feature(
-        cfeature.COASTLINE,
-        edgecolor='lime')
+    # ax.add_feature(cfeature.COASTLINE, edgecolor='lime')
+    ax.add_feature(cfeature.COASTLINE, edgecolor=txt)
 
-    ax.add_feature(
-        cfeature.OCEAN,
-        facecolor='darkblue')
+    # ax.add_feature(cfeature.LAKES, facecolor='blue')
+    ax.add_feature(cfeature.LAKES, edgecolor=txt, facecolor=bg)
+
+    # ax.add_feature(cfeature.OCEAN, facecolor='darkblue')
+    ax.add_feature(cfeature.OCEAN, facecolor=bg)
 
     # https://cartopy.readthedocs.io/v0.25.0.post2/gallery/lines_and_polygons/nightshade.html#sphx-glr-gallery-lines-and-polygons-nightshade-py
     # UTC Time
