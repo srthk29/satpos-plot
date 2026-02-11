@@ -11,6 +11,7 @@ import cartopy.feature as cfeature
 
 from fastapi import FastAPI
 from fastapi.responses import Response, JSONResponse
+from pydantic import BaseModel
 
 from model.pos import SatellitePlot
 from model.location import Location
@@ -20,6 +21,13 @@ from typing import List
 from helper import plot_custom_svg
 
 app = FastAPI()
+
+
+class Plot(BaseModel):
+    media_type: str
+    plot_type: str
+    # content: bytes
+    content: str
 
 
 def encode_base64(data: bytes) -> str:
@@ -184,22 +192,26 @@ async def get_plot_svg_nearside():
 
 
 @app.post("/custom/plot")
-async def get_plot_req(req: SatellitePlot):
+async def get_plot_req(req: SatellitePlot, response_model=list[Plot]):
     # result = {**req.dict()}
     # return result
     # return req.model_dump()
 
-    return Response(
-        media_type="image/svg+xml",
-        content=plot_custom_svg(
-            req.norad,
-            req.plot_types[0],
-            plot_size(req.size_type),
-            req.image_format,
-            req.color_scheme,
-            req.locations,
-            req.now_location,
-            req.icon,
-            req.nightshade
+    plots = []
+    for plot_type in req.plot_types:
+        plots.append(Plot(
+            # https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/MIME_types#image_types
+            media_type=req.image_format,
+            plot_type=plot_type,
+            content=encode_base64(plot_custom_svg(
+                req.norad,
+                plot_type,
+                plot_size(req.size_type),
+                req.image_format,
+                req.color_scheme,
+                req.locations,
+                req.now_location,
+                req.icon,
+                req.nightshade)))
         )
-    )
+    return plots

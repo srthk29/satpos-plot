@@ -36,6 +36,8 @@ def plot_custom_svg(
         nightshade: bool) -> bytes:
 
     fig = plt.figure(figsize=size.figsize, dpi=size.dpi)
+    # https://stackoverflow.com/questions/4581504/how-to-set-opacity-of-background-colour-of-graph-with-matplotlib
+    fig.patch.set_alpha(0.0)
     # fig = plt.figure(figsize=(16, 8), dpi=300)
     plt.axis("off")
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
