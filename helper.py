@@ -1,5 +1,6 @@
-import io
+import base64
 from datetime import datetime, timezone
+import io
 import numpy as np
 
 from typing import List
@@ -22,6 +23,10 @@ from model.color_scheme import get_theme_colors
 from model.color_scheme import get_accent_colors
 
 from model.location import Location
+
+
+def encode_base64(data: bytes) -> str:
+    return base64.b64encode(data).decode("utf-8")
 
 
 def plot_custom_svg(
@@ -205,6 +210,63 @@ def plot_svg_nearside() -> bytes:
 
     ax.set_global()
     # ax.set_extent([-180, 180, -90, 90])
+    ax.margins(0)
+
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format="svg", bbox_inches="tight", pad_inches=0)
+    plt.close(fig)
+
+    buffer.seek(0)
+    return buffer.getvalue()
+
+
+def plot_svg(locs: List[Location]) -> bytes:
+    fig = plt.figure(figsize=(16, 8))
+    plt.axis("off")
+    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+
+    ax = plt.axes(projection=ccrs.PlateCarree())
+    # ax.coastlines()
+    ax.add_feature(
+        cfeature.LAND,
+        edgecolor='lime',
+        facecolor='forestgreen',
+        zorder=0)
+
+    ax.add_feature(
+        cfeature.LAKES,
+        edgecolor='black',
+        linewidth=0.2,
+        facecolor='blue')
+
+    ax.add_feature(
+        cfeature.OCEAN,
+        facecolor='darkblue')
+
+    ax.add_feature(
+        cfeature.COASTLINE,
+        edgecolor='lime',
+        # facecolor='forestgreen',
+        zorder=0)
+
+    # https://cartopy.readthedocs.io/v0.25.0.post2/gallery/lines_and_polygons/nightshade.html#sphx-glr-gallery-lines-and-polygons-nightshade-py
+    # UTC Time
+    date = datetime.now(timezone.utc)
+    ax.add_feature(Nightshade(date, alpha=0.25))
+
+    if locs:
+        # lons = [loc.longitude for loc in locations]
+        # lats = [loc.latitude for loc in locations]
+        lons, lats = zip(*[(loc.longitude, loc.latitude) for loc in locs])
+
+        plt.plot(lons, lats,
+                 color='darkgreen',
+                 linewidth=1.5,
+                 marker='x',
+                 transform=ccrs.Geodetic())
+
+    ax.set_global()
+    ax.set_extent([-180, 180, -90, 90])
     ax.margins(0)
 
     buffer = io.BytesIO()
