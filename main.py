@@ -1,4 +1,4 @@
-import logging
+# import logging
 import time
 
 from fastapi import FastAPI, Request
@@ -10,8 +10,8 @@ from model.pos import SatellitePlot
 from model.size_type import plot_size
 
 # Configure basic logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# logging.basicConfig(level=logging.INFO)
+# logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
@@ -24,10 +24,11 @@ async def add_process_time_header(request: Request, call_next):
     response.headers["X-Process-Time"] = str(process_time)
 
     # Log the response time along with the request path and status code
+    """
     logger.info(
-        f"Request: {request.url.path} | Status: {response.status_code} | Process Time: {
-            process_time:.4f}s"
+        f"Request: {request.url.path} | Status: {response.status_code} | Process Time: {process_time:.4f}s"
     )
+    """
 
     return response
 

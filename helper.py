@@ -31,11 +31,6 @@ def encode_base64(data: bytes) -> str:
 projection_PlateCarree = ccrs.PlateCarree()
 transform_Geodetic = ccrs.Geodetic()
 
-projection_NearsidePerspective = ccrs.NearsidePerspective(
-    central_latitude=0.0, central_longitude=0.0, satellite_height=35785831
-)
-
-
 iss_img = mpimg.imread("iss.png")  # transparent background
 sat_img = mpimg.imread("sat.png")  # transparent background
 
@@ -63,7 +58,6 @@ def plot_custom_svg(
     if type == type.PlateCarree:
         projection = projection_PlateCarree
     else:
-        """
         if now:
             cen_lat = now.latitude
             cen_lon = now.longitude
@@ -74,11 +68,8 @@ def plot_custom_svg(
             h = 35785831
 
         projection = ccrs.NearsidePerspective(
-            central_latitude=cen_lat,
-            central_longitude=cen_lon,
-            satellite_height=h)
-        """
-        projection = projection_NearsidePerspective
+            central_latitude=cen_lat, central_longitude=cen_lon, satellite_height=h
+        )
 
     ax = plt.axes(projection=projection)
     # ax.coastlines()
