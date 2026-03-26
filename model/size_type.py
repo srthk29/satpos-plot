@@ -33,6 +33,5 @@ _SIZE_MAP = {
     SizeType.print:     PlotSize.PRINT,
 }
 
-
 def plot_size(size: SizeType) -> PlotSize:
     return _SIZE_MAP[size]
