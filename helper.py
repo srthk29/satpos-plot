@@ -1,7 +1,6 @@
 import base64
 import io
-from datetime import datetime, timezone
-from typing import List
+from datetime import UTC, datetime
 
 import matplotlib
 import numpy as np
@@ -17,7 +16,7 @@ from cartopy.feature.nightshade import Nightshade
 from matplotlib.offsetbox import AnnotationBbox, OffsetImage
 from matplotlib.transforms import Affine2D
 
-from model.color_scheme import Colorscheme, get_accent_colors, get_theme_colors
+from model.color_scheme import Colorscheme
 from model.image_format import ImageFormat
 from model.location import Location
 from model.plot_type import PlotType
@@ -41,7 +40,7 @@ def plot_custom_svg(
     size: PlotSize,
     format: ImageFormat,
     colorscheme: Colorscheme,
-    locs: List[Location],
+    locs: list[Location],
     now: Location,
     icon: bool,
     nightshade: bool,
@@ -78,8 +77,8 @@ def plot_custom_svg(
     # Features with a higher zorder value are drawn on
     # top of features with a lower zorder value.
 
-    txt, _ = get_accent_colors(colorscheme.accent)
-    _, bg = get_theme_colors(colorscheme.theme)
+    txt = colorscheme.accent.colors.text.hex
+    bg = colorscheme.theme.colors.bg.hex
 
     # ax.add_feature(cfeature.LAND, edgecolor='lime', facecolor='forestgreen')
     ax.add_feature(cfeature.LAND, edgecolor=txt, facecolor=bg)
@@ -96,7 +95,7 @@ def plot_custom_svg(
     # https://cartopy.readthedocs.io/v0.25.0.post2/gallery/lines_and_polygons/nightshade.html#sphx-glr-gallery-lines-and-polygons-nightshade-py
     # UTC Time
     if nightshade:
-        date = datetime.now(timezone.utc)
+        date = datetime.now(UTC)
         ax.add_feature(Nightshade(date, alpha=0.25))
 
     if type == type.NearsidePerspective:
@@ -209,7 +208,7 @@ def plot_svg_nearside() -> bytes:
         )
     )
 
-    date = datetime.now(timezone.utc)
+    date = datetime.now(UTC)
     ax.add_feature(Nightshade(date, alpha=0.25))
 
     gl = ax.gridlines(crs=projection_PlateCarree, linewidth=1, color="black", alpha=0.5)
@@ -230,7 +229,7 @@ def plot_svg_nearside() -> bytes:
     return buffer.getvalue()
 
 
-def plot_svg(locs: List[Location]) -> bytes:
+def plot_svg(locs: list[Location]) -> bytes:
     fig = plt.figure(figsize=(16, 8))
     plt.axis("off")
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
@@ -252,7 +251,7 @@ def plot_svg(locs: List[Location]) -> bytes:
 
     # https://cartopy.readthedocs.io/v0.25.0.post2/gallery/lines_and_polygons/nightshade.html#sphx-glr-gallery-lines-and-polygons-nightshade-py
     # UTC Time
-    date = datetime.now(timezone.utc)
+    date = datetime.now(UTC)
     ax.add_feature(Nightshade(date, alpha=0.25))
 
     if locs:
