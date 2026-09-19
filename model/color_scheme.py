@@ -55,6 +55,12 @@ class Theme(ColorEnum):
     GRAPHITE = "graphite", (239, 231, 235), (24, 24, 27)
     FOREST = "forest", (220, 252, 231), (5, 46, 22)
     PLUM = "plum", (243, 232, 255), (59, 7, 100)
+    MABEL = "mabel", (49, 10, 49), (253, 232, 239)
+    PERRY = "perry", (248, 250, 252), (13, 59, 62)
+    GREENRANGER = "green-ranger", (236, 253, 245), (17, 24, 39)
+    ADVENTURE = "adventure", (30, 58, 138), (224, 242, 254)
+    SHINCHAN = "shinchan", (28, 25, 23), (254, 252, 232)
+    DORAEMON = "doraemon", (15, 23, 42), (255, 255, 255)
 
 
 class Accent(ColorEnum):
@@ -77,6 +83,12 @@ class Accent(ColorEnum):
     YELLOW = "yellow", (234, 179, 8), (161, 98, 7)
     LIME = "lime", (132, 204, 22), (77, 124, 15)
     ORANGE = "orange", (249, 115, 22), (194, 65, 12)
+    MABEL = "mabel", (236, 72, 153), (147, 51, 234)
+    PERRY = "perry", (20, 184, 166), (234, 88, 12)
+    GREENRANGER = "green-ranger", (234, 179, 8), (22, 163, 74)
+    ADVENTURE = "adventure", (234, 179, 8), (14, 165, 233)
+    SHINCHAN = "shinchan", (220, 38, 38), (202, 138, 4)
+    DORAEMON = "doraemon", (239, 68, 68), (59, 130, 246)
 
 
 @dataclass(frozen=True)
