@@ -42,7 +42,7 @@ class ColorEnum(StrEnum):
 
 
 class Theme(ColorEnum):
-    LIGHT = "light", (62, 62, 66), (230, 230, 250)
+    LIGHT = "light", (45, 45, 48), (245, 245, 247)
     DARK = "dark", (230, 230, 250), (62, 62, 66)
     DIM = "dim", (244, 244, 244), (36, 52, 71)
     SOLARIZED_LIGHT = "solarized-light", (0, 43, 54), (253, 246, 227)
@@ -52,7 +52,7 @@ class Theme(ColorEnum):
     NEBULA = "nebula", (175, 199, 255), (2, 0, 59)
     ASTROPHAGE = "astrophage", (239, 239, 239), (0, 0, 0)
     MIDNIGHT = "midnight", (226, 232, 240), (15, 23, 42)
-    GRAPHITE = "graphite", (239, 231, 235), (24, 24, 27)
+    GRAPHITE = "graphite", (229, 231, 235), (24, 24, 27)
     FOREST = "forest", (220, 252, 231), (5, 46, 22)
     PLUM = "plum", (243, 232, 255), (59, 7, 100)
     MABEL = "mabel", (49, 10, 49), (253, 232, 239)
@@ -61,18 +61,20 @@ class Theme(ColorEnum):
     ADVENTURE = "adventure", (30, 58, 138), (224, 242, 254)
     SHINCHAN = "shinchan", (28, 25, 23), (254, 252, 232)
     DORAEMON = "doraemon", (15, 23, 42), (255, 255, 255)
+    FIREFOX = "firefox", (30, 20, 45), (255, 255, 255)
+    FIREFOX_DARK = "firefox-dark", (255, 255, 255), (25, 18, 35)
 
 
 class Accent(ColorEnum):
-    DEFAULT = "default", (182, 2, 112), (0, 56, 168)
-    WHITE = "white", (255, 255, 255), (0, 0, 0)
-    GREEN = "green", (9, 121, 105), (11, 23, 42)
-    PINK = "pink", (245, 169, 184), (91, 206, 250)
-    RED = "red", (222, 49, 99), (11, 23, 42)
-    DARKRED = "darkred", (151, 24, 61), (11, 23, 42)
-    PURPLE = "purple", (100, 67, 130), (20, 20, 36)
-    BLUE = "blue", (102, 179, 255), (21, 39, 68)
-    DARKBLUE = "darkblue", (103, 145, 255), (1, 0, 47)
+    DEFAULT = "default", (190, 24, 93), (157, 23, 77)
+    GREEN = "green", (16, 185, 129), (6, 95, 70)
+    RED = "red", (244, 63, 94), (190, 24, 93)
+    PINK = "pink", (236, 72, 153), (157, 23, 77)
+    WHITE = "white", (255, 255, 255), (82, 82, 91)
+    DARKRED = "darkred", (185, 28, 28), (127, 29, 29)
+    PURPLE = "purple", (168, 85, 247), (126, 34, 206)
+    BLUE = "blue", (59, 130, 246), (30, 64, 175)
+    DARKBLUE = "darkblue", (96, 165, 250), (30, 64, 175)
     DARKPINK = "darkpink", (219, 39, 119), (157, 23, 77)
     EARTH = "earth", (234, 129, 29), (154, 65, 0)
     CYAN = "cyan", (6, 182, 212), (14, 116, 144)
@@ -89,6 +91,8 @@ class Accent(ColorEnum):
     ADVENTURE = "adventure", (234, 179, 8), (14, 165, 233)
     SHINCHAN = "shinchan", (220, 38, 38), (202, 138, 4)
     DORAEMON = "doraemon", (239, 68, 68), (59, 130, 246)
+    FIREFOX = "firefox", (168, 120, 255), (109, 40, 217)
+    FIREFOX_ORANGE = "firefox-orange", (255, 113, 57), (229, 73, 42)
 
 
 @dataclass(frozen=True)
